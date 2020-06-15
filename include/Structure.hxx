@@ -35,12 +35,24 @@ namespace TTBParser
         boost::posix_time::ptime time_start;
         boost::posix_time::ptime time_end;
         std::string label;
+
+        friend std::ostream& operator<<(std::ostream& os, duration_event& de)
+        {
+            os << de.time_start << "\t" << de.time_end << "\t" << de.label;
+            return os;
+        }
     };
 
     struct single_event
     {
         boost::posix_time::ptime time;
         std::string label;
+
+        friend std::ostream& operator<<(std::ostream& os, single_event& se)
+        {
+            os << se.time << "\t" << "\t" << se.label;
+            return os;
+        }
     };
 
     struct Service

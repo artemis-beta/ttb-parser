@@ -54,6 +54,18 @@ namespace TTBParser
 
     }
 
+    boost::posix_time::ptime TTBParser::_parser_impl::_get_time(const std::string& time_str)
+    {
+        const std::locale loc = std::locale(std::locale::classic(),
+                                             new boost::posix_time::time_input_facet("%H:%M"));
+        std::istringstream is(time_str);
+        is.imbue(loc);
+        boost::posix_time::ptime t;
+        is >> t;
+
+        return t;
+    }
+
     bool Parser::ParseServices(const std::string& file_name)
     {
         try
@@ -95,18 +107,18 @@ namespace TTBParser
                 if(std::find(comp.begin(), comp.end(), ':') != comp.end())
                 {
                     std::vector<std::string> _time_components = _impl->_split(comp, ';');
-                    
+
                     if(_time_components.size() == 2)
                     {
-                        const std::locale loc = std::locale(std::locale::classic(), new boost::posix_time::time_input_facet("%H:%M"));
-                        std::istringstream is(_time_components[0]);
-                        is.imbue(loc);
-                        boost::posix_time::ptime t;
-                        is >> t;
-                        service.single_events.push_back({t, _time_components[1]});
+                        
+                        service.single_events.push_back({_impl->_get_time(_time_components[0]), 
+                                                        _time_components[1]});
+                       // std::cout << service.single_events[service.single_events.size()-1] << std::endl;
                     }
                 }
             }
         }
+
+        return true;
     }
 };

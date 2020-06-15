@@ -48,6 +48,7 @@ namespace TTBParser
         public:
             std::vector<TimetableEntry> _calling_points;
             bool _file_check(const std::string& file_name);
+            boost::posix_time::ptime _get_time(const std::string& time_str);
             std::vector<std::string> _split(const std::string& str, const char delimiter=char(0));
     };
 

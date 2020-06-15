@@ -39,3 +39,17 @@ TEST(TestTTBParser, TestSplitByNullChar)
 
     EXPECT_EQ(n_delim, (_impl->_split(_test_str)).size());
 }
+
+TEST(TestTTBParser, TestOpenRealFile)
+{
+    TTBParser::Parser* parser = new TTBParser::Parser;
+    EXPECT_TRUE(parser->ParseServices("/Users/krizar/Documents/RailwayOpSimRepos/FR-ParisMetro/Program_Timetables/RATP_MetroMoFri.ttb"));
+}
+
+TEST(TestTTBParser, TestStringToTime)
+{
+    std::string test_str = "10:00";
+    TTBParser::_parser_impl* _impl = new TTBParser::_parser_impl;
+    std::string _result = boost::posix_time::to_simple_string(_impl->_get_time(test_str));
+    EXPECT_TRUE(_result.find(test_str) != std::string::npos);
+}
