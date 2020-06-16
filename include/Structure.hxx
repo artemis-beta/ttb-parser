@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>
  
  @author K. Zarebski
- @date   last modified Mon Jun 15 2020
+ @date   last modified Tue Jun 16 2020
 */
 #ifndef __STRUCTURE_TTB_HXX__
 #define __STRUCTURE_TTB_HXX__
@@ -24,6 +24,8 @@
 #include <ctime>
 #include <vector>
 #include <tuple>
+
+#include "Types.hxx"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time.hpp>
@@ -57,6 +59,7 @@ namespace TTBParser
 
     struct Service
     {
+        ServiceType type;
         std::vector<duration_event> duration_events;
         std::vector<single_event> single_events;
         boost::posix_time::ptime start_time;
@@ -67,6 +70,22 @@ namespace TTBParser
         int brake_force = -1;
         int max_speed = -1;
         int start_speed = -1;
+        int signaller_speed = -1;
+
+        friend std::ostream& operator<<(std::ostream& os, Service& srv)
+        {
+            os << "[" << srv.headcode << "]" << std::endl;
+            os << "\t" << "Description: " << srv.description << std::endl;
+            os << "\t" << "Start Time: ";
+            os << srv.start_time.time_of_day() << std::endl;
+            if(srv.mass != -1){os << "\t" << "Mass: " << srv.mass << " T" <<  std::endl;}
+            if(srv.start_speed != -1){os << "\t" << "Start Speed: " << srv.start_speed << " km/h" << std::endl;}
+            if(srv.max_speed != -1){os << "\t" << "Max Speed: " << srv.max_speed << " km/h" << std::endl;}
+            if(srv.power != -1){os << "\t" << "Power: " << srv.power << " kW" << std::endl;}
+            if(srv.brake_force != -1){os << "\t" << "Brake Force: " << srv.brake_force << " T" << std::endl;}
+
+            return os;
+        }
     };
 };
 

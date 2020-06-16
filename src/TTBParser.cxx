@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>
  
  @author K. Zarebski
- @date   last modified Sun Jun 07 2020
+ @date   last modified Tue Jun 16 2020
 */
 
 #include "TTBParser.hxx"
@@ -96,14 +96,60 @@ namespace TTBParser
 
         std::vector<std::string> _ttb_data = _impl->_split(_file_data[0]);
 
-        std::map<std::string, Service> services;
-
         for(auto& serv : _ttb_data)
         {
             Service service;
             std::vector<std::string> _components = _impl->_split(serv, ',');
-            for(auto& comp : _components)
+            if(_components.size() < 3) continue;
+            for(int i{0}; i < _components.size(); ++i)
             {
+                if(i == 0)
+                {
+                    std::vector<std::string> init_components = _impl->_split(_components[i], ';');
+
+                    service.headcode = init_components[0];
+                    service.description = init_components[1];
+
+                    if(init_components.size() > 2)
+                    {
+                        service.start_speed = static_cast<int>(std::stoi(init_components[2]));
+                        service.max_speed = static_cast<int>(std::stoi(init_components[3]));
+                        service.mass = static_cast<int>(std::stoi(init_components[4]));
+                        service.brake_force = static_cast<int>(std::stoi(init_components[5]));
+                        service.power = static_cast<int>(std::stoi(init_components[6]));
+                    }
+
+                    if(init_components.size() > 7)
+                    {
+                        service.signaller_speed = static_cast<int>(std::stoi(init_components[7]));
+                    }
+
+                    continue;
+
+                }
+
+                if(i == 1)
+                {
+                    std::vector<std::string> start_components = _impl->_split(_components[i], ';');
+
+                    service.start_time = _impl->_get_time(start_components[0]);
+
+                    if(start_components[1] == "Snt")
+                    {
+                        service.type = ServiceType::NewService;
+                    }
+                    else if(start_components[1] == "Sns")
+                    {
+                        service.type = ServiceType::ServiceFromService;
+                    }
+                    else if(start_components[1] == "Sns-sh")
+                    {
+                        service.type = ServiceType::ServiceFromShuttle;
+                    }
+
+                }
+
+                const std::string comp = _components[i];
                 if(std::find(comp.begin(), comp.end(), ':') != comp.end())
                 {
                     std::vector<std::string> _time_components = _impl->_split(comp, ';');
@@ -123,7 +169,11 @@ namespace TTBParser
                     }
 
                 }
+
             }
+            
+            std::cout << service << std::endl;
+            _impl->_services[service.headcode] = service;
         }
 
         return true;

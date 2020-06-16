@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>
  
  @author K. Zarebski
- @date   last modified Mon Jun 15 2020
+ @date   last modified Mon Jun 16 2020
 */
 #ifndef __TTBPARSER_HXX__
 #define __TTBPARSER_HXX__
@@ -33,20 +33,14 @@
 #include <boost/range.hpp>
 
 #include "Structure.hxx"
+#include "Types.hxx"
 
 namespace TTBParser
 {
-    struct TimetableEntry
-    {
-        std::string location;
-        std::string start_time;
-        std::string end_time;
-    };
-
     class _parser_impl
     {
         public:
-            std::vector<TimetableEntry> _calling_points;
+            std::map<std::string, Service> _services;
             bool _file_check(const std::string& file_name);
             boost::posix_time::ptime _get_time(const std::string& time_str);
             std::vector<std::string> _split(const std::string& str, const char delimiter=char(0));
