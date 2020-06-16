@@ -18,7 +18,7 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib )
 file( GLOB_RECURSE SRCS ${CMAKE_SOURCE_DIR}/src/*.cxx )
 list( REMOVE_ITEM SRCS ${CMAKE_SOURCE_DIR}/src/main.cxx )
 
-find_package( Boost COMPONENTS system filesystem REQUIRED )
+find_package( Boost COMPONENTS system filesystem date_time REQUIRED )
 
 add_library( ${PROJECT_NAME} ${SRCS} )
 target_link_libraries( ${PROJECT_NAME} ${Boost_LIBRARIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${LIBS} )
