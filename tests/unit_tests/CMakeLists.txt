@@ -11,7 +11,7 @@ target_include_directories(${unit_tests} PUBLIC ${Boost_INCLUDE_DIRS})
 target_include_directories(${unit_tests} PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 target_include_directories(${unit_tests} PRIVATE ${GMOCK_INCLUDE_DIRS})
-target_link_libraries(${unit_tests} PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(${unit_tests} PUBLIC ${Boost_LIBRARIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 target_link_libraries(${unit_tests} PRIVATE TTBParser)
 target_link_libraries(${unit_tests} PRIVATE ${PROJECT_LIBS} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY})
 
