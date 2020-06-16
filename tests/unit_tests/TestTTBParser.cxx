@@ -1,6 +1,10 @@
 #include "gtest/gtest.h"
 #include "TTBParser.hxx"
 
+#ifndef ROOT_DIR
+#error Root Directory Must be Set!
+#endif
+
 #include <string>
 
 #include <boost/random.hpp>
@@ -43,7 +47,7 @@ TEST(TestTTBParser, TestSplitByNullChar)
 TEST(TestTTBParser, TestOpenRealFile)
 {
     TTBParser::Parser* parser = new TTBParser::Parser;
-    EXPECT_TRUE(parser->ParseServices("/Users/krizar/Documents/RailwayOpSimRepos/FR-ParisMetro/Program_Timetables/RATP_MetroMoFri.ttb"));
+    EXPECT_TRUE(parser->ParseServices(std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb"));
 }
 
 TEST(TestTTBParser, TestStringToTime)

@@ -17,6 +17,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib )
 file( GLOB_RECURSE SRCS ${CMAKE_SOURCE_DIR}/src/*.cxx )
 list( REMOVE_ITEM SRCS ${CMAKE_SOURCE_DIR}/src/main.cxx )
+set( CMAKE_CXX_FLAGS "-DROOT_DIR=\\\"${CMAKE_SOURCE_DIR}\\\"")
 
 find_package( Boost COMPONENTS system filesystem date_time REQUIRED )
 
