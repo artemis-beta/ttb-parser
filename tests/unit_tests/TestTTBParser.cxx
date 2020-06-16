@@ -37,7 +37,7 @@ TEST(TestTTBParser, TestSplitByNullChar)
     const std::string _test_str = random_str_with_delim(100);
     const int n_delim = std::count(_test_str.begin(), _test_str.end(), char(0));
 
-    EXPECT_EQ(n_delim, (_impl->_split(_test_str)).size());
+    EXPECT_EQ(n_delim+1, (_impl->_split(_test_str)).size());
 }
 
 TEST(TestTTBParser, TestOpenRealFile)

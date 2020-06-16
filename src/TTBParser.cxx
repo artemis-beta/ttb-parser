@@ -50,6 +50,8 @@ namespace TTBParser
             _temp += c;
         }
 
+        _out.push_back(_temp);
+
         return _out;
 
     }
@@ -87,8 +89,6 @@ namespace TTBParser
         
         std::string _data_str;
 
-        std::cout << char(0) << std::endl;
-
         while(getline(file, _data_str))
         {
             _file_data.push_back(_data_str);
@@ -107,14 +107,21 @@ namespace TTBParser
                 if(std::find(comp.begin(), comp.end(), ':') != comp.end())
                 {
                     std::vector<std::string> _time_components = _impl->_split(comp, ';');
+                
+                    if(_time_components.size() == 3)
+                    {
+                        service.duration_events.push_back({_impl->_get_time(_time_components[0]),
+                                                                _impl->_get_time(_time_components[1]),
+                                                                _time_components[2]});
+                    }
 
-                    if(_time_components.size() == 2)
+                    else if(_time_components.size() == 2)
                     {
                         
                         service.single_events.push_back({_impl->_get_time(_time_components[0]), 
                                                         _time_components[1]});
-                       // std::cout << service.single_events[service.single_events.size()-1] << std::endl;
                     }
+
                 }
             }
         }
