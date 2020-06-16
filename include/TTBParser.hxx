@@ -29,7 +29,8 @@
 #include <iostream>
 
 #include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp> 
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/range.hpp>
 
 #include "Structure.hxx"
