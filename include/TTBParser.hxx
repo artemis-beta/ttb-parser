@@ -45,6 +45,7 @@ namespace TTBParser
             bool _file_check(const std::string& file_name);
             boost::posix_time::ptime _get_time(const std::string& time_str);
             std::vector<std::string> _split(const std::string& str, const char delimiter=char(0));
+            Coordinate _parse_coordinate(const std::string& str, const char delimiter='-');
     };
 
     class Parser
@@ -54,6 +55,7 @@ namespace TTBParser
         public:
             Parser(char separator=char(0)) : _impl(new _parser_impl) {}
             bool ParseServices(const std::string& file_name);
+            std::map<std::string, Service> getServices() const {return _impl->_services;}
     };
 };
 

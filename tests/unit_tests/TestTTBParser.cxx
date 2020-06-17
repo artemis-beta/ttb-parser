@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "TTBParser.hxx"
+#include "Structure.hxx"
 
 #ifndef ROOT_DIR
 #error Root Directory Must be Set!
@@ -44,16 +45,28 @@ TEST(TestTTBParser, TestSplitByNullChar)
     EXPECT_EQ(n_delim+1, (_impl->_split(_test_str)).size());
 }
 
-TEST(TestTTBParser, TestOpenRealFile)
-{
-    TTBParser::Parser* parser = new TTBParser::Parser;
-    EXPECT_TRUE(parser->ParseServices(std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb"));
-}
-
 TEST(TestTTBParser, TestStringToTime)
 {
     std::string test_str = "10:00";
     TTBParser::_parser_impl* _impl = new TTBParser::_parser_impl;
     std::string _result = boost::posix_time::to_simple_string(_impl->_get_time(test_str));
     EXPECT_TRUE(_result.find(test_str) != std::string::npos);
+}
+
+TEST(TestTTBParser, TestParseCoordinate)
+{
+    std::string test_str = "N31-22";
+    const TTBParser::Coordinate test_coord = {-31, 22};
+    TTBParser::_parser_impl* _impl = new TTBParser::_parser_impl;
+
+    EXPECT_EQ(_impl->_parse_coordinate(test_str), test_coord);
+}
+
+TEST(TestTTBParser, TestOpenRealFile)
+{
+    TTBParser::Parser* parser = new TTBParser::Parser;
+    EXPECT_TRUE(parser->ParseServices(std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb"));
+    EXPECT_EQ(parser->getServices()["1L01"].parent->headcode, "1L00");
+    EXPECT_EQ(parser->getServices()["1L00"].entry.first.X, 174);
+    EXPECT_EQ(parser->getServices()["1L00"].entry.first.Y, -6);
 }

@@ -33,6 +33,22 @@ namespace TTBParser
         return  !boost::filesystem::is_empty(file_name);
     }
 
+    Coordinate _parser_impl::_parse_coordinate(const std::string& coordinate, const char delimiter)
+    {
+        std::vector<std::string> _components = _split(coordinate, delimiter);
+        if(_components[0][0] == 'N')
+        {
+            _components[0][0] = '-';
+        }
+
+        if(_components[1][0] == 'N')
+        {
+            _components[1][0] = '-';
+        }
+
+        return  {std::stoi(_components[0]), std::stoi(_components[1])};
+    }
+
     std::vector<std::string> _parser_impl::_split(const std::string& in_string, const char delimiter)
     {
         std::vector<std::string> _out;
@@ -95,6 +111,7 @@ namespace TTBParser
         }
 
         std::vector<std::string> _ttb_data = _impl->_split(_file_data[0]);
+        std::vector<std::pair<std::string, std::string>> linked_services;
 
         for(auto& serv : _ttb_data)
         {
@@ -146,6 +163,31 @@ namespace TTBParser
                     {
                         service.type = ServiceType::ServiceFromShuttle;
                     }
+                    else if(start_components[1] == "Snt-sh")
+                    {
+                        service.type = ServiceType::ShuttleFromStop;
+                    }
+
+                    if(start_components.size() > 2)
+                    {
+                        std::vector<std::string> _coords;
+                        switch(service.type)
+                        {
+                            case ServiceType::NewService:
+                                _coords = _impl->_split(start_components[2], ' ');
+                                service.entry = {_impl->_parse_coordinate(_coords[0]), _impl->_parse_coordinate(_coords[1])};
+                                break;
+                            case ServiceType::ShuttleFromStop:
+                                service.entry = {_impl->_parse_coordinate(start_components[2]), {-9999, -9999}};
+                                break;
+                            case ServiceType::ServiceFromService:
+                                linked_services.push_back({start_components[2], service.headcode});
+                                break;
+                            default:
+                                break;
+                        }
+                        
+                    }
 
                 }
 
@@ -172,8 +214,13 @@ namespace TTBParser
 
             }
             
-            std::cout << service << std::endl;
             _impl->_services[service.headcode] = service;
+
+        }
+
+        for(auto& pair : linked_services)
+        {
+            _impl->_services[pair.second].parent = &(_impl->_services[pair.first]);
         }
 
         return true;

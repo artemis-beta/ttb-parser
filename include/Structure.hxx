@@ -57,6 +57,24 @@ namespace TTBParser
         }
     };
 
+    struct Coordinate
+    {
+        int X;
+        int Y;
+
+        friend std::ostream& operator<<(std::ostream& os, Coordinate& coord)
+        {
+            os << coord.X << "-" << coord.Y;
+            return os;
+        }
+
+        bool operator==(const Coordinate other) const
+        {
+            return X == other.X && Y == other.Y;
+        }
+
+    };
+
     struct Service
     {
         ServiceType type;
@@ -71,6 +89,9 @@ namespace TTBParser
         int max_speed = -1;
         int start_speed = -1;
         int signaller_speed = -1;
+        std::pair<Coordinate, Coordinate> entry = {{-9999, -9999}, {-9999, -9999}};
+        Coordinate exit = {-9999, -9999};
+        Service* parent = nullptr;
 
         friend std::ostream& operator<<(std::ostream& os, Service& srv)
         {
@@ -78,6 +99,9 @@ namespace TTBParser
             os << "\t" << "Description: " << srv.description << std::endl;
             os << "\t" << "Start Time: ";
             os << srv.start_time.time_of_day() << std::endl;
+            if(srv.parent){os << "\t" << "Formed From: " << srv.parent->headcode << std::endl;}
+            if(srv.entry.first.X != -9999){os << "\t" << "Entry: " << srv.entry.first;}
+            if(srv.entry.second.X != -9999){os << " " << srv.entry.second << std::endl;}
             if(srv.mass != -1){os << "\t" << "Mass: " << srv.mass << " T" <<  std::endl;}
             if(srv.start_speed != -1){os << "\t" << "Start Speed: " << srv.start_speed << " km/h" << std::endl;}
             if(srv.max_speed != -1){os << "\t" << "Max Speed: " << srv.max_speed << " km/h" << std::endl;}
