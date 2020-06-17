@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>
  
  @author K. Zarebski
- @date   last modified Tue Jun 16 2020
+ @date   last modified Wed Jun 17 2020
 */
 #ifndef __STRUCTURE_TTB_HXX__
 #define __STRUCTURE_TTB_HXX__
@@ -32,12 +32,26 @@
 
 namespace TTBParser
 {
+    /**
+     * @brief Structure for events with start and end time
+     * 
+     * This structure covers events that last a duration such
+     * as arrival/departure from a station
+     * 
+     */
     struct duration_event
     {
-        boost::posix_time::ptime time_start;
-        boost::posix_time::ptime time_end;
-        std::string label;
+        boost::posix_time::ptime time_start;    /*!< Start time */
+        boost::posix_time::ptime time_end;      /*!< End time */
+        std::string label;                      /*!< Event label/location */
 
+        /**
+         * @brief Allows duration_event to be sent to std::cout
+         * 
+         * @param os output stream
+         * @param de duration_event instance
+         * @return std::ostream& 
+         */
         friend std::ostream& operator<<(std::ostream& os, duration_event& de)
         {
             os << de.time_start << "\t" << de.time_end << "\t" << de.label;
@@ -45,11 +59,23 @@ namespace TTBParser
         }
     };
 
+    /**
+     * @brief Structure for single time events
+     * 
+     * This is a structure for events containing only a single time
+     */
     struct single_event
     {
-        boost::posix_time::ptime time;
-        std::string label;
+        boost::posix_time::ptime time;  /*!< Event time */
+        std::string label;              /*!< Event label/location */
 
+        /**
+         * @brief Allows single_event to be sent to std::cout
+         * 
+         * @param os output stream
+         * @param se the single_event object
+         * @return std::ostream& 
+         */
         friend std::ostream& operator<<(std::ostream& os, single_event& se)
         {
             os << se.time << "\t" << "\t" << se.label;
@@ -57,17 +83,35 @@ namespace TTBParser
         }
     };
 
+    /**
+     * @brief Structure describing the coordinates
+     * 
+     */
     struct Coordinate
     {
-        int X;
-        int Y;
+        int X;  /*!< X Coordinate on map */
+        int Y;  /*!< Y Coordinate on map */
 
+        /**
+         * @brief Allows coordinate to be sent to std::cout
+         * 
+         * @param os output stream
+         * @param coord the coordinate instance
+         * @return std::ostream& 
+         */
         friend std::ostream& operator<<(std::ostream& os, Coordinate& coord)
         {
             os << coord.X << "-" << coord.Y;
             return os;
         }
 
+        /**
+         * @brief compares one coordinate with another
+         * 
+         * @param other coordinate to compare with
+         * @return true 
+         * @return false 
+         */
         bool operator==(const Coordinate other) const
         {
             return X == other.X && Y == other.Y;
@@ -75,23 +119,31 @@ namespace TTBParser
 
     };
 
+    /**
+     * @brief Structure describing a single service
+     * 
+     * This struct contains the information for a single service, when
+     * only 'description' is initialised it also acts a placeholder
+     * for any comments within the timetable
+     */
     struct Service
     {
-        ServiceType type;
-        std::vector<duration_event> duration_events;
-        std::vector<single_event> single_events;
-        boost::posix_time::ptime start_time;
-        std::string headcode;
-        std::string description;
-        int mass = -1;
-        int power = -1;
-        int brake_force = -1;
-        int max_speed = -1;
-        int start_speed = -1;
-        int signaller_speed = -1;
-        std::pair<Coordinate, Coordinate> entry = {{-9999, -9999}, {-9999, -9999}};
-        Coordinate exit = {-9999, -9999};
-        Service* parent = nullptr;
+        int index = 0;                                  /*!< Identifier to maintain ordering in file */
+        ServiceType type;                               /*!< Service type, e.g. Sns etc */
+        std::vector<duration_event> duration_events;    /*!< Events containing a start and end time */
+        std::vector<single_event> single_events;        /*!< Events with only a single time */
+        boost::posix_time::ptime start_time;            /*!< Service start time */
+        std::string headcode;                           /*!< Service headcode */
+        std::string description;                        /*!< Description of service */
+        int mass = -1;                                  /*!< Mass in T */
+        int power = -1;                                 /*!< Power in kW */
+        int brake_force = -1;                           /*!< Brake force in T */
+        int max_speed = -1;                             /*!< Max speed in km/h */
+        int start_speed = -1;                           /*!< Start speed in km/h */
+        int signaller_speed = -1;                       /*!< Start speed from signaller control */
+        std::pair<Coordinate, Coordinate> entry = {{-9999, -9999}, {-9999, -9999}}; /*!< Entry point coordinates */
+        Coordinate exit = {-9999, -9999};   /*!< Exit coordinate */
+        Service* parent = nullptr;          /*!< Pointer to parent service */
 
         friend std::ostream& operator<<(std::ostream& os, Service& srv)
         {

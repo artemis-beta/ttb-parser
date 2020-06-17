@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>
  
  @author K. Zarebski
- @date   last modified Mon Jun 16 2020
+ @date   last modified Tue Jun 17 2020
 */
 #ifndef __TTBPARSER_HXX__
 #define __TTBPARSER_HXX__
@@ -38,23 +38,88 @@
 
 namespace TTBParser
 {
+    /**
+     * @brief Internal parser class
+     * 
+     * The class contains the protected functions used
+     * within the main parser class. By placing them inside
+     * a separate object they can be tested in unit tests
+     * 
+     */
     class _parser_impl
     {
         public:
-            std::map<std::string, Service> _services;
+            boost::posix_time::ptime _start_time;   /*!< Timetable start time */
+            std::map<std::string, Service> _services;   /*!< map of services with headcodes as keys */
+
+            /**
+             * @brief Check selected timetable file is valid
+             * 
+             * This function determines if the file exists and whether it
+             * is parsible by the parser.
+             * 
+             * @param file_name name of ttb file to be read
+             * @return true 
+             * @return false 
+             */
             bool _file_check(const std::string& file_name);
+
+            /**
+             * @brief parse string to a boost posix_time::ptime object
+             * 
+             * @param time_str input string to parse
+             * @return boost::posix_time::ptime 
+             */
             boost::posix_time::ptime _get_time(const std::string& time_str);
+
+            /**
+             * @brief Split string based on a selected delimiter
+             * 
+             * @param str  input string to parse
+             * @param delimiter char to split by (defaults to NULL char)
+             * @return std::vector<std::string> 
+             */
             std::vector<std::string> _split(const std::string& str, const char delimiter=char(0));
+
+            /**
+             * @brief 
+             * 
+             * @param str string to parse
+             * @param delimiter char to split by
+             * @return Coordinate 
+             */
             Coordinate _parse_coordinate(const std::string& str, const char delimiter='-');
+
     };
 
+    /**
+     * @brief Main parser class for timetable files
+     * 
+     * This is the public accessible parser class used to read
+     * in and parse ttb files
+     * 
+     */
     class Parser
     {
         private:
-            _parser_impl* _impl;
+            _parser_impl* _impl;    /*!< Instance of IMPL for internal functions */
         public:
             Parser(char separator=char(0)) : _impl(new _parser_impl) {}
+
+            /**
+             * @brief Parse timetable file and return true if successful
+             * 
+             * @param file_name input file name as string
+             * @return true 
+             * @return false 
+             */
             bool ParseServices(const std::string& file_name);
+
+            /**
+             * @brief Get the services
+             * 
+             * @return std::map<std::string, Service> 
+             */
             std::map<std::string, Service> getServices() const {return _impl->_services;}
     };
 };

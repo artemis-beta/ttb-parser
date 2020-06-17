@@ -62,7 +62,7 @@ TEST(TestTTBParser, TestParseCoordinate)
     EXPECT_EQ(_impl->_parse_coordinate(test_str), test_coord);
 }
 
-TEST(TestTTBParser, TestOpenRealFile)
+TEST(TestTTBParser, TestOpenFile1)
 {
     TTBParser::Parser* parser = new TTBParser::Parser;
     EXPECT_TRUE(parser->ParseServices(std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb"));
@@ -71,4 +71,10 @@ TEST(TestTTBParser, TestOpenRealFile)
     EXPECT_EQ(parser->getServices()["1L00"].entry.first.Y, -6);
     EXPECT_EQ(parser->getServices()["1L00"].duration_events[0].label, "Berault");
     EXPECT_EQ(parser->getServices()["1L00"].single_events[0].label, "Chateau de Vincennes");
+}
+
+TEST(TestTTBParser, TestOpenFile2)
+{
+    TTBParser::Parser* parser = new TTBParser::Parser;
+    EXPECT_TRUE(parser->ParseServices(std::string(ROOT_DIR)+"/tests/Birmingham 0700 Start.ttb"));
 }

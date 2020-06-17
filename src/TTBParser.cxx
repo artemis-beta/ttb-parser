@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>
  
  @author K. Zarebski
- @date   last modified Tue Jun 16 2020
+ @date   last modified Wed Jun 17 2020
 */
 
 #include "TTBParser.hxx"
@@ -86,6 +86,8 @@ namespace TTBParser
 
     bool Parser::ParseServices(const std::string& file_name)
     {
+        int index = 0;
+
         try
         {
             if(!_impl->_file_check(file_name))
@@ -105,6 +107,8 @@ namespace TTBParser
         
         std::string _data_str;
 
+        bool is_intro_str = true;
+
         while(getline(file, _data_str))
         {
             _file_data.push_back(_data_str);
@@ -116,8 +120,28 @@ namespace TTBParser
         for(auto& serv : _ttb_data)
         {
             Service service;
+
+            if(std::find(serv.begin(), serv.end(), ';') == serv.end())
+            {
+                if(std::isdigit(serv[0]) && std::isdigit(serv[1]) && serv[2] == ':')
+                {
+                    _impl->_start_time = _impl->_get_time(serv);
+                    continue;
+                }
+
+                else
+                {
+                    service.description = serv;
+                    service.index = ++index;
+                    _impl->_services["Comment "+std::to_string(service.index)] = service;
+                }
+            }
+
             std::vector<std::string> _components = _impl->_split(serv, ',');
-            if(_components.size() < 3) continue;
+            
+            
+
+
             for(int i{0}; i < _components.size(); ++i)
             {
                 if(i == 0)
@@ -214,6 +238,7 @@ namespace TTBParser
 
             }
             
+            service.index = ++index;
             _impl->_services[service.headcode] = service;
 
         }
