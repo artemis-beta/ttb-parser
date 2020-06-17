@@ -69,4 +69,6 @@ TEST(TestTTBParser, TestOpenRealFile)
     EXPECT_EQ(parser->getServices()["1L01"].parent->headcode, "1L00");
     EXPECT_EQ(parser->getServices()["1L00"].entry.first.X, 174);
     EXPECT_EQ(parser->getServices()["1L00"].entry.first.Y, -6);
+    EXPECT_EQ(parser->getServices()["1L00"].duration_events[0].label, "Berault");
+    EXPECT_EQ(parser->getServices()["1L00"].single_events[0].label, "Chateau de Vincennes");
 }
