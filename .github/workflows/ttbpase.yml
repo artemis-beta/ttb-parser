@@ -19,7 +19,7 @@ jobs:
                 mkdir build
                 cd build
                 cmake ..
-                cmake --build . --config Debug -- -j4
+                make
             
             - name: Run Unit Tests
               run: |
@@ -46,6 +46,7 @@ jobs:
                 cd build
                 cmake .. -DCODE_COVERAGE=ON
                 make
+                make coverage
             
             - name: Run Unit Tests
               run: |
@@ -64,3 +65,4 @@ jobs:
                 lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' --output-file coverage.info
                 lcov --list coverage.info
                 bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+              continue-on-error: true # Do not want failed coverage to mean failed build!
