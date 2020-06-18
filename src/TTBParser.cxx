@@ -134,6 +134,7 @@ namespace TTBParser
                     service.description = serv;
                     service.index = ++index;
                     _impl->_services["Comment "+std::to_string(service.index)] = service;
+		    continue;
                 }
             }
 
@@ -144,6 +145,7 @@ namespace TTBParser
 
             for(int i{0}; i < _components.size(); ++i)
             {
+		std::cout << _components[i] << std::endl;
                 if(i == 0)
                 {
                     std::vector<std::string> init_components = _impl->_split(_components[i], ';');
@@ -247,6 +249,7 @@ namespace TTBParser
         {
             _impl->_services[pair.second].parent = &(_impl->_services[pair.first]);
         }
+
 
         return true;
     }
