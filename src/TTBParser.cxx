@@ -25,6 +25,12 @@ namespace TTBParser
 {
     bool _parser_impl::_file_check(const std::string& file_name)
     {
+        if(file_name.empty())
+        {
+            std::cerr << "File name is empty string" << std::endl;
+            return false;
+        }
+
         if(!boost::filesystem::exists(file_name))
         {
             throw std::runtime_error("File '"+file_name+"' not found");
@@ -88,18 +94,7 @@ namespace TTBParser
     {
         int index = 0;
 
-        try
-        {
-            if(!_impl->_file_check(file_name))
-            {
-                throw std::runtime_error("Could not find file '"+file_name+"'");
-            }
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-            return false;
-        }
+        if(!_impl->_file_check(file_name)) return false;
 
         boost::filesystem::ifstream  file(file_name);
 

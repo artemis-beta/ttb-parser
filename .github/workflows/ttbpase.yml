@@ -63,3 +63,4 @@ jobs:
               run: |
                 bash <(curl -s https://codecov.io/bash) -f TTBParser.info || echo "Codecov did not collect coverage reports"
               continue-on-error: true # Do not want failed coverage to mean failed build!
+              fail-fast: false
