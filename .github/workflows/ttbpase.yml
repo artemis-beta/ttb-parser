@@ -61,8 +61,5 @@ jobs:
 
             - name: Run Coverage
               run: |
-                lcov --directory . --capture --output-file coverage.info
-                lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' --output-file coverage.info
-                lcov --list coverage.info
-                bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+                bash <(curl -s https://codecov.io/bash) -f TTBParser.info || echo "Codecov did not collect coverage reports"
               continue-on-error: true # Do not want failed coverage to mean failed build!
