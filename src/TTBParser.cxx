@@ -27,13 +27,12 @@ namespace TTBParser
     {
         if(file_name.empty())
         {
-            std::cerr << "File name is empty string" << std::endl;
             return false;
         }
-
+        
         if(!boost::filesystem::exists(file_name))
         {
-            throw std::runtime_error("File '"+file_name+"' not found");
+           return false;
         }
 
         return  !boost::filesystem::is_empty(file_name);
@@ -140,7 +139,6 @@ namespace TTBParser
 
             for(int i{0}; i < _components.size(); ++i)
             {
-		std::cout << _components[i] << std::endl;
                 if(i == 0)
                 {
                     std::vector<std::string> init_components = _impl->_split(_components[i], ';');
