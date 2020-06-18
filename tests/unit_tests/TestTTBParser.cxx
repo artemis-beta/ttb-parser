@@ -10,6 +10,13 @@
 
 #include <boost/random.hpp>
 
+/**
+ * @brief Generate random string with a delimiter
+ * 
+ * @param size length of string
+ * @param delimiter character to separate by
+ * @return std::string 
+ */
 std::string random_str_with_delim(int size, const char delimiter=char(0))
 {
     boost::random::mt19937 rng;
