@@ -34,7 +34,7 @@ if(CODE_COVERAGE)
 	find_program( GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat )
 	find_program( GCOV_PATH gcov )
 	
-	set(LCOV_EXCLUDES "build/*" "/usr*")
+	set(LCOV_EXCLUDES "build/*" "/usr*" "tests/*")
 	
 	add_custom_target(coverage
 	
@@ -45,7 +45,7 @@ if(CODE_COVERAGE)
 		COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} -c -i -d . -b ${PROJECT_SOURCE_DIR} -o ${PROJECT_NAME}.base
 	
 	        # Run executables
-		COMMAND ${CMAKE_SOURCE_DIR}/build/examples/main
+		COMMAND ${CMAKE_SOURCE_DIR}/tests/bin/TTBParser-unit_tests
 	
 	        # Capturing lcov counters and generating report
 		COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} --directory . -b ${PROJECT_SOURCE_DIR} --capture --output-file ${PROJECT_NAME}.capture
@@ -82,4 +82,3 @@ target_include_directories( ${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include
                             ${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} )
 
 add_subdirectory(tests)
-add_subdirectory(examples)
