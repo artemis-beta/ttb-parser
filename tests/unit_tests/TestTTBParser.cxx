@@ -40,7 +40,7 @@ std::string random_str_with_delim(int size, const char delimiter=char(0))
 TEST(TestTTBParser, TestFileNotFound)
 {
     TTBParser::Parser* parser = new TTBParser::Parser;
-    ASSERT_FALSE(parser->ParseServices("test.ttb"));
+    ASSERT_FALSE(parser->ParseEntries("test.ttb"));
 }
 
 TEST(TestTTBParser, TestSplitByNullChar)
@@ -72,16 +72,16 @@ TEST(TestTTBParser, TestParseCoordinate)
 TEST(TestTTBParser, TestOpenFile1)
 {
     TTBParser::Parser* parser = new TTBParser::Parser;
-    EXPECT_TRUE(parser->ParseServices(std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb"));
-    EXPECT_EQ(parser->getServices()["1L01"].parent->headcode, "1L00");
-    EXPECT_EQ(parser->getServices()["1L00"].entry.first.X, 174);
-    EXPECT_EQ(parser->getServices()["1L00"].entry.first.Y, -6);
-    EXPECT_EQ(parser->getServices()["1L00"].duration_events[0].label, "Berault");
-    EXPECT_EQ(parser->getServices()["1L00"].single_events[0].label, "Chateau de Vincennes");
+    EXPECT_TRUE(parser->ParseEntries(std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb"));
+    EXPECT_EQ(parser->getEntries()["1L01"].parent->headcode, "1L00");
+    EXPECT_EQ(parser->getEntries()["1L00"].entry.first.X, 174);
+    EXPECT_EQ(parser->getEntries()["1L00"].entry.first.Y, -6);
+    EXPECT_EQ(parser->getEntries()["1L00"].duration_events[0].label, "Berault");
+    EXPECT_EQ(parser->getEntries()["1L00"].single_events[0].label, "Chateau de Vincennes");
 }
 
 TEST(TestTTBParser, TestOpenFile2)
 {
     TTBParser::Parser* parser = new TTBParser::Parser;
-    EXPECT_TRUE(parser->ParseServices(std::string(ROOT_DIR)+"/tests/Birmingham 0700 Start.ttb"));
+    EXPECT_TRUE(parser->ParseEntries(std::string(ROOT_DIR)+"/tests/Birmingham 0700 Start.ttb"));
 }

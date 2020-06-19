@@ -24,10 +24,13 @@
 #include <ctime>
 #include <vector>
 #include <tuple>
+#include <fstream>
 
 #include "Types.hxx"
+#include "Utilities.hxx"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <boost/date_time.hpp>
 
 namespace TTBParser
@@ -120,21 +123,21 @@ namespace TTBParser
     };
 
     /**
-     * @brief Structure describing a single service
+     * @brief Structure describing a single entry
      * 
-     * This struct contains the information for a single service, when
+     * This struct contains the information for a single entry, when
      * only 'description' is initialised it also acts a placeholder
      * for any comments within the timetable
      */
-    struct Service
+    struct Entry
     {
         int index = 0;                                  /*!< Identifier to maintain ordering in file */
         ServiceType type;                               /*!< Service type, e.g. Sns etc */
         std::vector<duration_event> duration_events;    /*!< Events containing a start and end time */
         std::vector<single_event> single_events;        /*!< Events with only a single time */
-        boost::posix_time::ptime start_time;            /*!< Service start time */
-        std::string headcode;                           /*!< Service headcode */
-        std::string description;                        /*!< Description of service */
+        boost::posix_time::ptime start_time;            /*!< Entry start time */
+        std::string headcode;                           /*!< Entry headcode */
+        std::string description;                        /*!< Description of entry */
         int mass = -1;                                  /*!< Mass in T */
         int power = -1;                                 /*!< Power in kW */
         int brake_force = -1;                           /*!< Brake force in T */
@@ -143,9 +146,9 @@ namespace TTBParser
         int signaller_speed = -1;                       /*!< Start speed from signaller control */
         std::pair<Coordinate, Coordinate> entry = {{-9999, -9999}, {-9999, -9999}}; /*!< Entry point coordinates */
         Coordinate exit = {-9999, -9999};   /*!< Exit coordinate */
-        Service* parent = nullptr;          /*!< Pointer to parent service */
+        Entry* parent = nullptr;          /*!< Pointer to parent entry */
 
-        friend std::ostream& operator<<(std::ostream& os, Service& srv)
+        friend std::ostream& operator<<(std::ostream& os, Entry& srv)
         {
             os << "[" << srv.headcode << "]" << std::endl;
             os << "\t" << "Description: " << srv.description << std::endl;
@@ -162,6 +165,30 @@ namespace TTBParser
 
             return os;
         }
+
+	std::vector<std::string> asVector() const;
+    };
+
+    struct Timetable
+    {
+	    boost::posix_time::ptime start;
+	    std::map<std::string, Entry> entries;
+	    std::string route_name;
+	    std::string name;
+
+	    std::pair<std::string, Entry> getEntry(const int i) const
+	    {
+		    for(auto& entry : entries)
+		    {
+			    if(entry.second.index == i)
+			    {
+				return {entry.first, entry.second};
+			    }
+	            }
+
+		    return {"",{}};
+	    }
+	    bool sendToFile(const std::string file_name);
     };
 };
 

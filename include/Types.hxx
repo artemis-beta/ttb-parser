@@ -21,6 +21,8 @@
 #ifndef __TYPES_HXX__
 #define __TYPES_HXX__
 
+#include <map>
+
 namespace TTBParser
 {
     enum class ServiceType
@@ -31,6 +33,17 @@ namespace TTBParser
         ShuttleFromFeeder,
         ShuttleFromStop
     };
+
+    std::map<std::string, ServiceType> types = {{"Snt", ServiceType::NewService},
+	    					{"Sns", ServiceType::ServiceFromService},
+						{"Snt-sh", ServiceType::ShuttleFromStop}};
+
+    std::string typeToString(const ServiceType& type);
+
+    ServiceType typeFromString(const std::string str)
+    {
+	    return types[str];
+    } 
 };
 
 #endif

@@ -77,19 +77,8 @@ namespace TTBParser
 
     }
 
-    boost::posix_time::ptime TTBParser::_parser_impl::_get_time(const std::string& time_str)
-    {
-        const std::locale loc = std::locale(std::locale::classic(),
-                                             new boost::posix_time::time_input_facet("%H:%M"));
-        std::istringstream is(time_str);
-        is.imbue(loc);
-        boost::posix_time::ptime t;
-        is >> t;
 
-        return t;
-    }
-
-    bool Parser::ParseServices(const std::string& file_name)
+    bool Parser::ParseEntries(const std::string& file_name)
     {
         int index = 0;
 
@@ -109,25 +98,26 @@ namespace TTBParser
         }
 
         std::vector<std::string> _ttb_data = _impl->_split(_file_data[0]);
-        std::vector<std::pair<std::string, std::string>> linked_services;
+        std::vector<std::pair<std::string, std::string>> linked_entries;
 
         for(auto& serv : _ttb_data)
         {
-            Service service;
+            Entry entry;
 
             if(std::find(serv.begin(), serv.end(), ';') == serv.end())
             {
                 if(std::isdigit(serv[0]) && std::isdigit(serv[1]) && serv[2] == ':')
                 {
-                    _impl->_start_time = _impl->_get_time(serv);
+		    entry.start_time = getTimeFromString(serv);
+		    _impl->_entries["Start Time"] = entry;
                     continue;
                 }
 
                 else
                 {
-                    service.description = serv;
-                    service.index = ++index;
-                    _impl->_services["Comment "+std::to_string(service.index)] = service;
+                    entry.description = serv;
+                    entry.index = ++index;
+                    _impl->_entries["Comment "+std::to_string(entry.index)] = entry;
 		    continue;
                 }
             }
@@ -143,21 +133,21 @@ namespace TTBParser
                 {
                     std::vector<std::string> init_components = _impl->_split(_components[i], ';');
 
-                    service.headcode = init_components[0];
-                    service.description = init_components[1];
+                    entry.headcode = init_components[0];
+                    entry.description = init_components[1];
 
                     if(init_components.size() > 2)
                     {
-                        service.start_speed = static_cast<int>(std::stoi(init_components[2]));
-                        service.max_speed = static_cast<int>(std::stoi(init_components[3]));
-                        service.mass = static_cast<int>(std::stoi(init_components[4]));
-                        service.brake_force = static_cast<int>(std::stoi(init_components[5]));
-                        service.power = static_cast<int>(std::stoi(init_components[6]));
+                        entry.start_speed = static_cast<int>(std::stoi(init_components[2]));
+                        entry.max_speed = static_cast<int>(std::stoi(init_components[3]));
+                        entry.mass = static_cast<int>(std::stoi(init_components[4]));
+                        entry.brake_force = static_cast<int>(std::stoi(init_components[5]));
+                        entry.power = static_cast<int>(std::stoi(init_components[6]));
                     }
 
                     if(init_components.size() > 7)
                     {
-                        service.signaller_speed = static_cast<int>(std::stoi(init_components[7]));
+                        entry.signaller_speed = static_cast<int>(std::stoi(init_components[7]));
                     }
 
                     continue;
@@ -168,39 +158,39 @@ namespace TTBParser
                 {
                     std::vector<std::string> start_components = _impl->_split(_components[i], ';');
 
-                    service.start_time = _impl->_get_time(start_components[0]);
+                    entry.start_time = getTimeFromString(start_components[0]);
 
                     if(start_components[1] == "Snt")
                     {
-                        service.type = ServiceType::NewService;
+                        entry.type = ServiceType::NewService;
                     }
                     else if(start_components[1] == "Sns")
                     {
-                        service.type = ServiceType::ServiceFromService;
+                        entry.type = ServiceType::ServiceFromService;
                     }
                     else if(start_components[1] == "Sns-sh")
                     {
-                        service.type = ServiceType::ServiceFromShuttle;
+                        entry.type = ServiceType::ServiceFromShuttle;
                     }
                     else if(start_components[1] == "Snt-sh")
                     {
-                        service.type = ServiceType::ShuttleFromStop;
+                        entry.type = ServiceType::ShuttleFromStop;
                     }
 
                     if(start_components.size() > 2)
                     {
                         std::vector<std::string> _coords;
-                        switch(service.type)
+                        switch(entry.type)
                         {
                             case ServiceType::NewService:
                                 _coords = _impl->_split(start_components[2], ' ');
-                                service.entry = {_impl->_parse_coordinate(_coords[0]), _impl->_parse_coordinate(_coords[1])};
+                                entry.entry = {_impl->_parse_coordinate(_coords[0]), _impl->_parse_coordinate(_coords[1])};
                                 break;
                             case ServiceType::ShuttleFromStop:
-                                service.entry = {_impl->_parse_coordinate(start_components[2]), {-9999, -9999}};
+                                entry.entry = {_impl->_parse_coordinate(start_components[2]), {-9999, -9999}};
                                 break;
                             case ServiceType::ServiceFromService:
-                                linked_services.push_back({start_components[2], service.headcode});
+                                linked_entries.push_back({start_components[2], entry.headcode});
                                 break;
                             default:
                                 break;
@@ -211,21 +201,22 @@ namespace TTBParser
                 }
 
                 const std::string comp = _components[i];
-                if(std::find(comp.begin(), comp.end(), ':') != comp.end())
+		
+		if(std::find(comp.begin(), comp.end(), ':') != comp.end())
                 {
                     std::vector<std::string> _time_components = _impl->_split(comp, ';');
                 
                     if(_time_components.size() == 3)
                     {
-                        service.duration_events.push_back({_impl->_get_time(_time_components[0]),
-                                                                _impl->_get_time(_time_components[1]),
+                        entry.duration_events.push_back({getTimeFromString(_time_components[0]),
+                                                                getTimeFromString(_time_components[1]),
                                                                 _time_components[2]});
                     }
 
                     else if(_time_components.size() == 2)
                     {
                         
-                        service.single_events.push_back({_impl->_get_time(_time_components[0]), 
+                        entry.single_events.push_back({getTimeFromString(_time_components[0]), 
                                                         _time_components[1]});
                     }
 
@@ -233,17 +224,27 @@ namespace TTBParser
 
             }
             
-            service.index = ++index;
-            _impl->_services[service.headcode] = service;
+            entry.index = ++index;
+            _impl->_entries[entry.headcode] = entry;
 
         }
 
-        for(auto& pair : linked_services)
+        for(auto& pair : linked_entries)
         {
-            _impl->_services[pair.second].parent = &(_impl->_services[pair.first]);
+            _impl->_entries[pair.second].parent = &(_impl->_entries[pair.first]);
         }
 
 
         return true;
+    }
+
+    Timetable Parser::getTimetableObject(const std::string name)
+    {
+	Timetable timetable;
+	timetable.entries = _impl->_entries;
+	timetable.start = _impl->_entries["Start Time"].start_time;
+	timetable.name = name;
+
+	return timetable;
     }
 };

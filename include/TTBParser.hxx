@@ -30,11 +30,11 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/range.hpp>
 
 #include "Structure.hxx"
 #include "Types.hxx"
+#include "Utilities.hxx"
 
 namespace TTBParser
 {
@@ -49,8 +49,7 @@ namespace TTBParser
     class _parser_impl
     {
         public:
-            boost::posix_time::ptime _start_time;   /*!< Timetable start time */
-            std::map<std::string, Service> _services;   /*!< map of services with headcodes as keys */
+            std::map<std::string, Entry> _entries;   /*!< map of entries with headcodes/other as keys */
 
             /**
              * @brief Check selected timetable file is valid
@@ -64,13 +63,6 @@ namespace TTBParser
              */
             bool _file_check(const std::string& file_name);
 
-            /**
-             * @brief parse string to a boost posix_time::ptime object
-             * 
-             * @param time_str input string to parse
-             * @return boost::posix_time::ptime 
-             */
-            boost::posix_time::ptime _get_time(const std::string& time_str);
 
             /**
              * @brief Split string based on a selected delimiter
@@ -113,14 +105,16 @@ namespace TTBParser
              * @return true 
              * @return false 
              */
-            bool ParseServices(const std::string& file_name);
+            bool ParseEntries(const std::string& file_name);
 
             /**
-             * @brief Get the services
+             * @brief Get the entries
              * 
-             * @return std::map<std::string, Service> 
+             * @return std::map<std::string, Entry> 
              */
-            std::map<std::string, Service> getServices() const {return _impl->_services;}
+            std::map<std::string, Entry> getEntries() const {return _impl->_entries;}
+
+	    Timetable getTimetableObject(const std::string name);
     };
 };
 
