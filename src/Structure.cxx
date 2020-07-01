@@ -67,6 +67,7 @@ namespace TTBParser
 
 	std::string Timetable::_send_to_string()
 	{
+		std::cerr << entries.size() << std::endl;
 		std::stringstream strs;
 		for(int i{0}; i < entries.size(); ++i)
 		{

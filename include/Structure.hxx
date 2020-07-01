@@ -23,6 +23,7 @@
 
 #include <ctime>
 #include <vector>
+#include <map>
 #include <tuple>
 #include <string>
 #include <sstream>
@@ -50,6 +51,11 @@ namespace TTBParser
         boost::posix_time::ptime time_end;      /*!< End time */
         std::string label;                      /*!< Event label/location */
 
+        std::string toString()
+        {
+            return to_simple_string(time_start.time_of_day()) + "\t" + to_simple_string(time_end.time_of_day()) + "\t" + label;
+        }
+
         /**
          * @brief Allows duration_event to be sent to std::cout
          * 
@@ -73,6 +79,11 @@ namespace TTBParser
     {
         boost::posix_time::ptime time;  /*!< Event time */
         std::string label;              /*!< Event label/location */
+
+        std::string toString()
+        {
+            return to_simple_string(time.time_of_day()) + "\t"  + label;
+        }
 
         /**
          * @brief Allows single_event to be sent to std::cout
@@ -99,7 +110,7 @@ namespace TTBParser
 
         std::string toString() const
         {
-            return std::to_string(X) + "-" + std::to_string(Y);
+            return std::to_string(X) + ", " + std::to_string(Y);
         }
 
         /**
@@ -144,9 +155,10 @@ namespace TTBParser
     struct Entry
     {
         int index = 0;                                  /*!< Identifier to maintain ordering in file */
+        int size = -1;                                  /*!< How long the Entry is in terms of components */
         ServiceType type;                               /*!< Service type, e.g. Sns etc */
-        std::vector<duration_event> duration_events;    /*!< Events containing a start and end time */
-        std::vector<single_event> single_events;        /*!< Events with only a single time */
+        std::map<int, duration_event> duration_events;    /*!< Events containing a start and end time */
+        std::map<int, single_event> single_events;        /*!< Events with only a single time */
         boost::posix_time::ptime start_time;            /*!< Entry start time */
         std::string headcode;                           /*!< Entry headcode */
         std::string description;                        /*!< Description of entry */
@@ -176,6 +188,18 @@ namespace TTBParser
             if(max_speed != -1){out += "\tMax Speed: "; out += std::to_string(max_speed); out += " km/h\n";}
             if(power != -1){out += "\tPower: "; out += std::to_string(power); out += " kW\n";}
             if(brake_force != -1){out += "\tBrake Force: "; out += std::to_string(brake_force); out += " T\n";}
+            
+            for(int i{0}; i < size; ++i)
+            {
+                if(duration_events.find(i) != duration_events.end())
+                {
+                    out += "\t"+duration_events[i].toString() + "\n";
+                }
+                else if(single_events.find(i) != single_events.end())
+                {
+                    out += "\t"+single_events[i].toString() + "\n";
+                }
+            }
 
             return out;
         }

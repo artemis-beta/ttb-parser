@@ -123,9 +123,7 @@ namespace TTBParser
             }
 
             std::vector<std::string> _components = _impl->_split(serv, ',');
-            
-            
-
+            entry.size = _components.size();
 
             for(int i{0}; i < _components.size(); ++i)
             {
@@ -194,30 +192,28 @@ namespace TTBParser
                                 break;
                             default:
                                 break;
-                        }
-                        
+                        }                       
                     }
-
                 }
 
                 const std::string comp = _components[i];
 		
-		if(std::find(comp.begin(), comp.end(), ':') != comp.end())
+		        if(std::find(comp.begin(), comp.end(), ':') != comp.end())
                 {
                     std::vector<std::string> _time_components = _impl->_split(comp, ';');
                 
                     if(_time_components.size() == 3)
                     {
-                        entry.duration_events.push_back({getTimeFromString(_time_components[0]),
+                        entry.duration_events[i] = {getTimeFromString(_time_components[0]),
                                                                 getTimeFromString(_time_components[1]),
-                                                                _time_components[2]});
+                                                                _time_components[2]};
                     }
 
                     else if(_time_components.size() == 2)
                     {
                         
-                        entry.single_events.push_back({getTimeFromString(_time_components[0]), 
-                                                        _time_components[1]});
+                        entry.single_events[i] = {getTimeFromString(_time_components[0]), 
+                                                        _time_components[1]};
                     }
 
                 }
@@ -226,7 +222,6 @@ namespace TTBParser
             
             entry.index = ++index;
             _impl->_entries[entry.headcode] = entry;
-
         }
 
         for(auto& pair : linked_entries)
@@ -234,6 +229,10 @@ namespace TTBParser
             _impl->_entries[pair.second].parent = &(_impl->_entries[pair.first]);
         }
 
+        for(auto& entry : _impl->_entries)
+        {
+            std::cerr << entry.second.toString() << std::endl;
+        }
 
         return true;
     }
