@@ -185,7 +185,8 @@ namespace TTBParser
                                 entry.entry = {_impl->_parse_coordinate(_coords[0]), _impl->_parse_coordinate(_coords[1])};
                                 break;
                             case ServiceType::ShuttleFromStop:
-                                entry.entry = {_impl->_parse_coordinate(start_components[2]), {-9999, -9999}};
+                                _coords = _impl->_split(start_components[2], ' ');
+                                entry.entry = {_impl->_parse_coordinate(_coords[0]), _impl->_parse_coordinate(_coords[1])};
                                 break;
                             case ServiceType::ServiceFromService:
                                 linked_entries.push_back({start_components[2], entry.headcode});
@@ -204,9 +205,28 @@ namespace TTBParser
                 
                     if(_time_components.size() == 3)
                     {
-                        entry.duration_events[i] = {getTimeFromString(_time_components[0]),
+                        if(getTimeFromString(_time_components[1]).is_not_a_date_time())
+                        {
+                            entry.finish_time = getTimeFromString(_time_components[0]);
+                            if(_time_components[1] == "Frh")
+                            {
+                                entry.finish_as = FinishType::FinishRemainHere;
+                            }
+                            else if(_time_components[1] == "Fns")
+                            {
+                                entry.finish_as = FinishType::FinishNewService;
+                            }
+                            else if(_time_components[1] == "Frh-sh")
+                            {
+                                entry.finish_as = FinishType::FinishRemainHereShuttle;
+                            }
+                        }
+                        else 
+                        {
+                            entry.duration_events[i] = {getTimeFromString(_time_components[0]),
                                                                 getTimeFromString(_time_components[1]),
                                                                 _time_components[2]};
+                        }
                     }
 
                     else if(_time_components.size() == 2)
@@ -218,6 +238,17 @@ namespace TTBParser
 
                 }
 
+                else
+                {
+                    std::vector<std::string> _components = _impl->_split(comp, ';');
+                    if(_components[0] == "R")
+                    {
+                        entry.repeats.number = stoi(_components[3]);
+                        entry.repeats.headcode_interval = stoi(_components[2]);
+                        entry.repeats.time_interval = stoi(_components[1]);
+                    }
+                }
+
             }
             
             entry.index = ++index;
@@ -227,11 +258,7 @@ namespace TTBParser
         for(auto& pair : linked_entries)
         {
             _impl->_entries[pair.second].parent = &(_impl->_entries[pair.first]);
-        }
-
-        for(auto& entry : _impl->_entries)
-        {
-            std::cerr << entry.second.toString() << std::endl;
+            _impl->_entries[pair.first].daughter = &(_impl->_entries[pair.second]);
         }
 
         return true;

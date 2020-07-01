@@ -35,6 +35,13 @@ namespace TTBParser
         ShuttleFromStop
     };
 
+    enum FinishType
+    {
+        FinishRemainHere,
+        FinishNewService,
+        FinishRemainHereShuttle
+    };
+
     std::string typeToString(const ServiceType& type);
 
     ServiceType typeFromString(const std::string str);

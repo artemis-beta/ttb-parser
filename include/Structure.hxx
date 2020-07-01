@@ -53,7 +53,12 @@ namespace TTBParser
 
         std::string toString()
         {
-            return to_simple_string(time_start.time_of_day()) + "\t" + to_simple_string(time_end.time_of_day()) + "\t" + label;
+            return ptimeToString(time_start) + "\t" + ptimeToString(time_end) + "\t" + label;
+        }
+
+        std::string toTTB()
+        {
+            return boost::algorithm::join(std::vector<std::string>({ptimeToString(time_start), ptimeToString(time_end), label}), ";");
         }
 
         /**
@@ -82,7 +87,12 @@ namespace TTBParser
 
         std::string toString()
         {
-            return to_simple_string(time.time_of_day()) + "\t"  + label;
+            return ptimeToString(time) + "\t"  + label;
+        }
+
+        std::string toTTB()
+        {
+            return boost::algorithm::join(std::vector<std::string>({ptimeToString(time), label}), ";");
         }
 
         /**
@@ -111,6 +121,15 @@ namespace TTBParser
         std::string toString() const
         {
             return std::to_string(X) + ", " + std::to_string(Y);
+        }
+
+        std::string toTTB() const
+        {
+            std::string X_str = (X < 0) ? "N" : "";
+            X_str += std::to_string(abs(X));
+            std::string Y_str = (Y < 0) ? "N" : "";
+            Y_str += std::to_string(abs(Y));
+            return X_str+"-"+Y_str;
         }
 
         /**
@@ -145,6 +164,26 @@ namespace TTBParser
 
     };
 
+    struct Repeats
+    {
+        int number = 0;
+        int time_interval = 0;
+        int headcode_interval = 0;
+
+        std::string toString()
+        {
+            return "Repeat "+std::to_string(number)+" times with headcode change XX"+\
+            ((headcode_interval < 10) ? "0" : "") + std::to_string(headcode_interval)+" every "+std::to_string(time_interval)+" mins";
+        }
+
+        std::string toTTB()
+        {
+            return boost::algorithm::join(std::vector<std::string>({"R", std::to_string(time_interval),
+                                                                    std::to_string(headcode_interval),
+                                                                    std::to_string(number)}), ";");
+        }
+    };
+
     /**
      * @brief Structure describing a single entry
      * 
@@ -157,9 +196,12 @@ namespace TTBParser
         int index = 0;                                  /*!< Identifier to maintain ordering in file */
         int size = -1;                                  /*!< How long the Entry is in terms of components */
         ServiceType type;                               /*!< Service type, e.g. Sns etc */
+        FinishType finish_as;                           /*!< Finish service event type */
         std::map<int, duration_event> duration_events;    /*!< Events containing a start and end time */
         std::map<int, single_event> single_events;        /*!< Events with only a single time */
+        Repeats repeats;                                /*!< Service repeat information */
         boost::posix_time::ptime start_time;            /*!< Entry start time */
+        boost::posix_time::ptime finish_time;           /*!< Entry end time */
         std::string headcode;                           /*!< Entry headcode */
         std::string description;                        /*!< Description of entry */
         int mass = -1;                                  /*!< Mass in T */
@@ -171,6 +213,7 @@ namespace TTBParser
         std::pair<Coordinate, Coordinate> entry = {{-9999, -9999}, {-9999, -9999}}; /*!< Entry point coordinates */
         Coordinate exit = {-9999, -9999};   /*!< Exit coordinate */
         Entry* parent = nullptr;          /*!< Pointer to parent entry */
+        Entry* daughter = nullptr;        /*!< Pointer to daughter entry */
 
         std::string toString()
         {
@@ -178,7 +221,7 @@ namespace TTBParser
             out += ("[" + headcode + "]" + "\n");
             out += ("\tDescription: " + description + "\n");
             out += "\tStart Time: ";
-            out +=  to_simple_string(start_time.time_of_day());
+            out +=  ptimeToString(start_time);
             out += "\n";
             if(parent){out += "\tFormed From: "; out += parent->headcode; out += "\n";}
             if(entry.first.X != -9999){out += "\tEntry: "; out = out + entry.first;}
@@ -200,11 +243,15 @@ namespace TTBParser
                     out += "\t"+single_events[i].toString() + "\n";
                 }
             }
+            if(repeats.number > 0)
+            {
+                out += "\t"+repeats.toString() + "\n";
+            }
 
             return out;
         }
 
-	    std::vector<std::string> asVector() const;
+	    std::vector<std::string> asVector();
     };
 
     struct Timetable

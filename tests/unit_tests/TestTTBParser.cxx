@@ -68,8 +68,8 @@ TEST(TestTTBParser, TestOpenFile1)
     EXPECT_EQ(parser->getEntries()["1L01"].parent->headcode, "1L00");
     EXPECT_EQ(parser->getEntries()["1L00"].entry.first.X, 174);
     EXPECT_EQ(parser->getEntries()["1L00"].entry.first.Y, -6);
-    EXPECT_EQ(parser->getEntries()["1L00"].duration_events[0].label, "Berault");
-    EXPECT_EQ(parser->getEntries()["1L00"].single_events[0].label, "Chateau de Vincennes");
+    EXPECT_EQ(parser->getEntries()["1L00"].duration_events.begin()->second.label, "Berault");
+    EXPECT_EQ(parser->getEntries()["1L00"].single_events.begin()->second.label, "Chateau de Vincennes");
 }
 
 TEST(TestTTBParser, TestOpenFile2)
@@ -78,7 +78,7 @@ TEST(TestTTBParser, TestOpenFile2)
     EXPECT_TRUE(parser->ParseEntries(std::string(ROOT_DIR)+"/tests/Birmingham 0700 Start.ttb"));
 }
 
-TEST(TestTTBParser, TestMakeString)
+TEST(TestTTBParser, TestOutputEqInput)
 {
     TTBParser::Parser* parser = new TTBParser::Parser;
     const std::string file = std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb";
