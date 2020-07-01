@@ -11,15 +11,15 @@ namespace TTBParser
 		strs << time;
 		return strs.str();
 	}
-    	boost::posix_time::ptime getTimeFromString(const std::string& time_str)
-    	{
-    	    const std::locale loc = std::locale(std::locale::classic(),
-    	                                         new boost::posix_time::time_input_facet("%H:%M"));
-    	    std::istringstream is(time_str);
-    	    is.imbue(loc);
-    	    boost::posix_time::ptime t;
-    	    is >> t;
+	boost::posix_time::ptime getTimeFromString(const std::string& time_str)
+	{
+		const std::locale loc = std::locale(std::locale::classic(),
+												new boost::posix_time::time_input_facet("%H:%M"));
+		std::istringstream is(time_str);
+		is.imbue(loc);
+		boost::posix_time::ptime t;
+		is >> t;
 
-    	    return t;
-    	}
+		return t;
+	}
 };

@@ -52,14 +52,6 @@ TEST(TestTTBParser, TestSplitByNullChar)
     EXPECT_EQ(n_delim+1, (_impl->_split(_test_str)).size());
 }
 
-TEST(TestTTBParser, TestStringToTime)
-{
-    std::string test_str = "10:00";
-    TTBParser::_parser_impl* _impl = new TTBParser::_parser_impl;
-    std::string _result = boost::posix_time::to_simple_string(_impl->_get_time(test_str));
-    EXPECT_TRUE(_result.find(test_str) != std::string::npos);
-}
-
 TEST(TestTTBParser, TestParseCoordinate)
 {
     std::string test_str = "N31-22";
@@ -84,4 +76,17 @@ TEST(TestTTBParser, TestOpenFile2)
 {
     TTBParser::Parser* parser = new TTBParser::Parser;
     EXPECT_TRUE(parser->ParseEntries(std::string(ROOT_DIR)+"/tests/Birmingham 0700 Start.ttb"));
+}
+
+TEST(TestTTBParser, TestMakeString)
+{
+    TTBParser::Parser* parser = new TTBParser::Parser;
+    const std::string file = std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb";
+    std::ifstream file_str(file);
+    parser->ParseEntries(file);
+    std::string _data_str;
+    getline(file_str, _data_str);
+    file_str.close();
+    TTBParser::Timetable timetable = parser->getTimetableObject("Test1");
+    EXPECT_EQ(timetable._send_to_string(), _data_str);
 }

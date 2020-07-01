@@ -240,11 +240,11 @@ namespace TTBParser
 
     Timetable Parser::getTimetableObject(const std::string name)
     {
-	Timetable timetable;
-	timetable.entries = _impl->_entries;
-	timetable.start = _impl->_entries["Start Time"].start_time;
-	timetable.name = name;
+        Timetable timetable;
+        timetable.entries = _impl->_entries;
+        timetable.start = _impl->_entries["Start Time"].start_time;
+        timetable.name = name;
 
-	return timetable;
+        return timetable;
     }
 };

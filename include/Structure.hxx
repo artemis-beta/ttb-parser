@@ -24,6 +24,8 @@
 #include <ctime>
 #include <vector>
 #include <tuple>
+#include <string>
+#include <sstream>
 #include <fstream>
 
 #include "Types.hxx"
@@ -95,6 +97,11 @@ namespace TTBParser
         int X;  /*!< X Coordinate on map */
         int Y;  /*!< Y Coordinate on map */
 
+        std::string toString() const
+        {
+            return std::to_string(X) + "-" + std::to_string(Y);
+        }
+
         /**
          * @brief Allows coordinate to be sent to std::cout
          * 
@@ -104,7 +111,7 @@ namespace TTBParser
          */
         friend std::ostream& operator<<(std::ostream& os, Coordinate& coord)
         {
-            os << coord.X << "-" << coord.Y;
+            os << coord.toString();
             return os;
         }
 
@@ -118,6 +125,11 @@ namespace TTBParser
         bool operator==(const Coordinate other) const
         {
             return X == other.X && Y == other.Y;
+        }
+
+        friend std::string operator+(const std::string str, Coordinate& coord)
+        {
+            return str+coord.toString();
         }
 
     };
@@ -148,25 +160,27 @@ namespace TTBParser
         Coordinate exit = {-9999, -9999};   /*!< Exit coordinate */
         Entry* parent = nullptr;          /*!< Pointer to parent entry */
 
-        friend std::ostream& operator<<(std::ostream& os, Entry& srv)
+        std::string toString()
         {
-            os << "[" << srv.headcode << "]" << std::endl;
-            os << "\t" << "Description: " << srv.description << std::endl;
-            os << "\t" << "Start Time: ";
-            os << srv.start_time.time_of_day() << std::endl;
-            if(srv.parent){os << "\t" << "Formed From: " << srv.parent->headcode << std::endl;}
-            if(srv.entry.first.X != -9999){os << "\t" << "Entry: " << srv.entry.first;}
-            if(srv.entry.second.X != -9999){os << " " << srv.entry.second << std::endl;}
-            if(srv.mass != -1){os << "\t" << "Mass: " << srv.mass << " T" <<  std::endl;}
-            if(srv.start_speed != -1){os << "\t" << "Start Speed: " << srv.start_speed << " km/h" << std::endl;}
-            if(srv.max_speed != -1){os << "\t" << "Max Speed: " << srv.max_speed << " km/h" << std::endl;}
-            if(srv.power != -1){os << "\t" << "Power: " << srv.power << " kW" << std::endl;}
-            if(srv.brake_force != -1){os << "\t" << "Brake Force: " << srv.brake_force << " T" << std::endl;}
+            std::string out;
+            out += ("[" + headcode + "]" + "\n");
+            out += ("\tDescription: " + description + "\n");
+            out += "\tStart Time: ";
+            out +=  to_simple_string(start_time.time_of_day());
+            out += "\n";
+            if(parent){out += "\tFormed From: "; out += parent->headcode; out += "\n";}
+            if(entry.first.X != -9999){out += "\tEntry: "; out = out + entry.first;}
+            if(entry.second.X != -9999){out += " " + entry.second + "\n";}
+            if(mass != -1){out += "\tMass: " + std::to_string(mass) + " T" +  "\n";}
+            if(start_speed != -1){out += "\tStart Speed: "; out += std::to_string(start_speed); out += " km/h\n";}
+            if(max_speed != -1){out += "\tMax Speed: "; out += std::to_string(max_speed); out += " km/h\n";}
+            if(power != -1){out += "\tPower: "; out += std::to_string(power); out += " kW\n";}
+            if(brake_force != -1){out += "\tBrake Force: "; out += std::to_string(brake_force); out += " T\n";}
 
-            return os;
+            return out;
         }
 
-	std::vector<std::string> asVector() const;
+	    std::vector<std::string> asVector() const;
     };
 
     struct Timetable
@@ -188,6 +202,7 @@ namespace TTBParser
 
 		    return {"",{}};
 	    }
+        std::string _send_to_string();
 	    bool sendToFile(const std::string file_name);
     };
 };
