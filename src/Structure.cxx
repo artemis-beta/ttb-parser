@@ -58,7 +58,6 @@ namespace TTBParser
             default:
                 break;
         }
-
         out.push_back(boost::algorithm::join(define, ";"));
 
         for(int i{0}; i < size; ++i)
@@ -72,6 +71,7 @@ namespace TTBParser
                 out.push_back(single_events[i].toTTB());
             }
         }
+
         switch(finish_as)
         {
             case FinishType::FinishRemainHere:
@@ -85,6 +85,7 @@ namespace TTBParser
             default:
                 break;
         }
+
         if(repeats.number > 0)
         {
             out.push_back(repeats.toTTB());

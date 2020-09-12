@@ -195,10 +195,10 @@ namespace TTBParser
     {
         int index = 0;                                  /*!< Identifier to maintain ordering in file */
         int size = -1;                                  /*!< How long the Entry is in terms of components */
-        ServiceType type;                               /*!< Service type, e.g. Sns etc */
-        FinishType finish_as;                           /*!< Finish service event type */
-        std::map<int, duration_event> duration_events;    /*!< Events containing a start and end time */
-        std::map<int, single_event> single_events;        /*!< Events with only a single time */
+        ServiceType type = NewService;                  /*!< Service type, e.g. Sns etc */
+        FinishType finish_as = FinishRemainHere;        /*!< Finish service event type */
+        std::map<int, duration_event> duration_events;  /*!< Events containing a start and end time */
+        std::map<int, single_event> single_events;      /*!< Events with only a single time */
         Repeats repeats;                                /*!< Service repeat information */
         boost::posix_time::ptime start_time;            /*!< Entry start time */
         boost::posix_time::ptime finish_time;           /*!< Entry end time */

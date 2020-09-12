@@ -14,7 +14,8 @@ namespace TTBParser
 	public:
 		TTBBuilder(Timetable* timetable) : _timetable(timetable) {}
 		void setStartTime(std::string time);
-		void insertEntry(const Entry entry, const int pos_index=-1); 
+		void insertEntry(const Entry entry, const int pos_index=-1);
+		Timetable* getTimetable() const {return _timetable;}
     };
 
     Entry Clone(const Entry entry, const std::string headcode, const int n_mins_offset);

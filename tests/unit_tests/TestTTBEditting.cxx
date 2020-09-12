@@ -17,12 +17,19 @@ TEST(TestTTBEditting, TestInsertEntry)
 {
     TTBParser::Timetable* ttb = new TTBParser::Timetable;
     TTBParser::TTBBuilder* _builder = new TTBParser::TTBBuilder(ttb);
-    TTBParser::Entry entry_a, entry_b;
-    entry_a.headcode = "1V02";
-    entry_b.headcode = "2V01"; 
+    TTBParser::Entry entry_a, entry_b, entry_c, entry_d, entry_e;
+    entry_a.headcode = "2V00";
+    entry_b.headcode = "2V01";
+    entry_c.headcode = "2V02";
+    entry_d.headcode = "2V03";
+    entry_e.headcode = "2V04";
     _builder->insertEntry(entry_a);
-    EXPECT_NO_THROW(_builder->insertEntry(entry_b, 0));
-    EXPECT_ANY_THROW(_builder->insertEntry(entry_a, 1));
+    EXPECT_NO_FATAL_FAILURE(_builder->insertEntry(entry_b, 0));
+    EXPECT_NO_FATAL_FAILURE(_builder->insertEntry(entry_c, 0));
+    EXPECT_NO_FATAL_FAILURE(_builder->insertEntry(entry_d, 2));
+    EXPECT_NO_FATAL_FAILURE(_builder->insertEntry(entry_a, 1));
+    EXPECT_NO_FATAL_FAILURE(_builder->insertEntry(entry_e));
+    EXPECT_NO_THROW(_builder->getTimetable()->getEntry(entry_a.headcode+"-"+TTBParser::ptimeToString(entry_a.start_time)));
 }
 
 TEST(TestTTBEditting, TestNewTimetable)
