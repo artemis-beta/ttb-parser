@@ -10,9 +10,8 @@ namespace TTBParser
     class TTBBuilder
     {
 	private:
-		Timetable* _timetable = new Timetable;
+		Timetable* _timetable = nullptr;
 	public:
-		TTBBuilder() {}
 		TTBBuilder(Timetable* timetable) : _timetable(timetable) {}
 		void setStartTime(std::string time);
 		void insertEntry(const Entry entry, const int pos_index=-1); 
