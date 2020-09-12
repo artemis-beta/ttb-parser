@@ -264,7 +264,7 @@ namespace TTBParser
         return true;
     }
 
-    Timetable Parser::getTimetableObject(const std::string name)
+    Timetable Parser::getTimetableObject(const std::string name) const
     {
         Timetable timetable;
         timetable.entries = _impl->_entries;
