@@ -76,7 +76,7 @@ endif(CODE_COVERAGE)
 
 find_package( Boost COMPONENTS system filesystem date_time REQUIRED )
 
-add_library( ${PROJECT_NAME} ${SRCS} )
+add_library( ${PROJECT_NAME} SHARED ${SRCS} )
 target_link_libraries( ${PROJECT_NAME} ${Boost_LIBRARIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${LIBS} )
 target_include_directories( ${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include
                             ${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} )

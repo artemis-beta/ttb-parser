@@ -114,7 +114,7 @@ namespace TTBParser
              */
             std::map<std::string, Entry> getEntries() const {return _impl->_entries;}
 
-	        Timetable getTimetableObject(const std::string name);
+	    Timetable getTimetableObject(const std::string name) const;
     };
 };
 

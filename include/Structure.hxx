@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>
  
  @author K. Zarebski
- @date   last modified Wed Jun 17 2020
+ @date   last modified 2020-08-22
 */
 #ifndef __STRUCTURE_TTB_HXX__
 #define __STRUCTURE_TTB_HXX__
@@ -215,6 +215,37 @@ namespace TTBParser
         Entry* parent = nullptr;          /*!< Pointer to parent entry */
         Entry* daughter = nullptr;        /*!< Pointer to daughter entry */
 
+    bool operator== (Entry& other)
+    {
+        return max_speed == other.max_speed && \
+        start_speed == other.start_speed && \
+        signaller_speed == other.signaller_speed && \
+        start_time == other.start_time && \
+        description == other.description && \
+        headcode == other.headcode && \
+        type == other.type && \
+        brake_force == other.brake_force && \
+        entry == other.entry && \
+        exit == other.exit;
+    }
+
+    bool operator== (const Entry& other) const
+    {
+        Entry _temp_1 = Entry(*this);
+        Entry _temp_2 = Entry(other);
+        return _temp_1 == _temp_2;
+    }
+
+    bool operator!= (Entry& other)
+    {
+        return !(*this == other);
+    }
+
+    bool operator!= (const Entry& other) const
+    {
+        return !(*this == other);
+    }
+
         std::string toString()
         {
             std::string out;
@@ -251,30 +282,31 @@ namespace TTBParser
             return out;
         }
 
-	    std::vector<std::string> asVector();
+    std::vector<std::string> asVector();
+    void TemperalOffset(int nmins);
     };
 
     struct Timetable
     {
-	    boost::posix_time::ptime start;
-	    std::map<std::string, Entry> entries;
-	    std::string route_name;
-	    std::string name;
+        boost::posix_time::ptime start;
+        std::map<std::string, Entry> entries = {};
+        std::string route_name;
+        std::string name;
 
-	    std::pair<std::string, Entry> getEntry(const int i) const
-	    {
-		    for(auto& entry : entries)
-		    {
-			    if(entry.second.index == i)
-			    {
-				return {entry.first, entry.second};
-			    }
-	            }
+        std::pair<std::string, Entry> getEntry(const int i) const
+        {
+            for(auto& entry : entries)
+            {
+                if(entry.second.index == i)
+                {
+                return {entry.first, entry.second};
+                }
+            }
 
-		    return {"",{}};
-	    }
+            return {"",{}};
+        }
         std::string _send_to_string();
-	    bool sendToFile(const std::string file_name);
+        bool sendToFile(const std::string file_name);
     };
 };
 
