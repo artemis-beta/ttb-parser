@@ -33,6 +33,7 @@
 #include "Utilities.hxx"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <boost/algorithm/string/join.hpp>
 #include <boost/date_time.hpp>
 
@@ -194,7 +195,7 @@ namespace TTBParser
     struct Entry
     {
         int index = 0;                                  /*!< Identifier to maintain ordering in file */
-        int size = -1;                                  /*!< How long the Entry is in terms of components */
+        int size = 0;                                   /*!< How long the Entry is in terms of components */
         ServiceType type = NewService;                  /*!< Service type, e.g. Sns etc */
         FinishType finish_as = FinishRemainHere;        /*!< Finish service event type */
         std::map<int, duration_event> duration_events;  /*!< Events containing a start and end time */
@@ -215,75 +216,68 @@ namespace TTBParser
         Entry* parent = nullptr;          /*!< Pointer to parent entry */
         Entry* daughter = nullptr;        /*!< Pointer to daughter entry */
 
-    bool operator== (Entry& other)
-    {
-        return max_speed == other.max_speed && \
-        start_speed == other.start_speed && \
-        signaller_speed == other.signaller_speed && \
-        start_time == other.start_time && \
-        description == other.description && \
-        headcode == other.headcode && \
-        type == other.type && \
-        brake_force == other.brake_force && \
-        entry == other.entry && \
-        exit == other.exit;
-    }
-
-    bool operator== (const Entry& other) const
-    {
-        Entry _temp_1 = Entry(*this);
-        Entry _temp_2 = Entry(other);
-        return _temp_1 == _temp_2;
-    }
-
-    bool operator!= (Entry& other)
-    {
-        return !(*this == other);
-    }
-
-    bool operator!= (const Entry& other) const
-    {
-        return !(*this == other);
-    }
-
-        std::string toString()
+        bool operator== (Entry& other)
         {
-            std::string out;
-            out += ("[" + headcode + "]" + "\n");
-            out += ("\tDescription: " + description + "\n");
-            out += "\tStart Time: ";
-            out +=  ptimeToString(start_time);
-            out += "\n";
-            if(parent){out += "\tFormed From: "; out += parent->headcode; out += "\n";}
-            if(entry.first.X != -9999){out += "\tEntry: "; out = out + entry.first;}
-            if(entry.second.X != -9999){out += " " + entry.second + "\n";}
-            if(mass != -1){out += "\tMass: " + std::to_string(mass) + " T" +  "\n";}
-            if(start_speed != -1){out += "\tStart Speed: "; out += std::to_string(start_speed); out += " km/h\n";}
-            if(max_speed != -1){out += "\tMax Speed: "; out += std::to_string(max_speed); out += " km/h\n";}
-            if(power != -1){out += "\tPower: "; out += std::to_string(power); out += " kW\n";}
-            if(brake_force != -1){out += "\tBrake Force: "; out += std::to_string(brake_force); out += " T\n";}
-            
-            for(int i{0}; i < size; ++i)
-            {
-                if(duration_events.find(i) != duration_events.end())
-                {
-                    out += "\t"+duration_events[i].toString() + "\n";
-                }
-                else if(single_events.find(i) != single_events.end())
-                {
-                    out += "\t"+single_events[i].toString() + "\n";
-                }
-            }
-            if(repeats.number > 0)
-            {
-                out += "\t"+repeats.toString() + "\n";
-            }
-
-            return out;
+            return max_speed == other.max_speed && \
+            start_speed == other.start_speed && \
+            signaller_speed == other.signaller_speed && \
+            start_time == other.start_time && \
+            description == other.description && \
+            headcode == other.headcode && \
+            type == other.type && \
+            brake_force == other.brake_force && \
+            entry == other.entry && \
+            exit == other.exit;
         }
 
-    std::vector<std::string> asVector();
-    void TemperalOffset(int nmins);
+        bool operator== (const Entry& other) const
+        {
+            Entry _temp_1 = Entry(*this);
+            Entry _temp_2 = Entry(other);
+            return _temp_1 == _temp_2;
+        }
+
+        bool operator!= (Entry& other)
+        {
+            return !(*this == other);
+        }
+
+        bool operator!= (const Entry& other) const
+        {
+            return !(*this == other);
+        }
+
+        std::string toString();
+
+        void addDurationEvent(boost::posix_time::ptime start, boost::posix_time::ptime end, std::string label, int index=-1)
+        {
+            if(duration_events.find(index) != duration_events.end() || single_events.find(index) != single_events.end())
+            {
+                throw std::invalid_argument("Index already exists!");
+            }
+            if(index == -1) index = (duration_events.size() > single_events.size()) ? duration_events.size() : single_events.size();
+            duration_events[index] = {start, end, label};
+            size += 1;
+        }
+
+        void addSingleEvent(boost::posix_time::ptime time, std::string label, int index=-1)
+        {
+            if(duration_events.find(index) != duration_events.end() || single_events.find(index) != single_events.end())
+            {
+                throw std::invalid_argument("Index already exists!");
+            }
+            if(index == -1) index = (duration_events.size() > single_events.size()) ? duration_events.size() : single_events.size();
+            single_events[index] = {time, label};
+            size += 1;
+        }
+
+        std::string toString() const
+        {
+            return toString();
+        }
+
+        std::vector<std::string> asVector();
+        void TemperalOffset(int nmins);
     };
 };
 
