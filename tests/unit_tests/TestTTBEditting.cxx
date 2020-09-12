@@ -22,7 +22,7 @@ TEST(TestTTBEditting, TestInsertEntry)
     entry_b.headcode = "2V01"; 
     _builder->insertEntry(entry_a);
     EXPECT_NO_THROW(_builder->insertEntry(entry_b, 0));
-    EXPECT_ANY_THROW(_builder->insertEntry(entry_a, 1));
+    EXPECT_NO_FATAL_FAILURE(_builder->getTimetable()->getEntries()[entry_a.headcode+"-"+TTBParser::ptimeToString(entry_a.start_time)]);
 }
 
 TEST(TestTTBEditting, TestNewTimetable)

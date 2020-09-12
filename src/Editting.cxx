@@ -10,22 +10,21 @@ namespace TTBParser
     void TTBBuilder::insertEntry(const Entry entry, const int pos_index)
     {
         const std::map<std::string, Entry> entries(_timetable->entries);
+        std::string key = entry.headcode;
         
         if(entries.size() > 0)
         {
             auto find_srv = entries.find(entry.headcode);
 
-            if(find_srv != entries.end())
-            {
-                throw std::invalid_argument("Headcode already in timetable");
-            }
+            key += "-";
+            key += ptimeToString(entry.start_time);
         }
         
         Entry _entry_insert(entry);
         if(pos_index == -1)
         {
             _entry_insert.index = _timetable->entries.size()-1;
-            _timetable->entries[entry.headcode] = _entry_insert;
+            _timetable->entries[key] = _entry_insert;
         }
         else
         {
@@ -34,7 +33,7 @@ namespace TTBParser
         {
             if(e.second.index >= pos_index) ++e.second.index;
         }
-        _timetable->entries[entry.headcode] = _entry_insert;
+        _timetable->entries[key] = _entry_insert;
         }
     }
 

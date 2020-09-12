@@ -31,6 +31,9 @@ namespace TTBParser
 
             return {"",{}};
         }
+
+        std::map<std::string, Entry> getEntries() const {return entries;}
+
         std::string _send_to_string();
         bool sendToFile(const std::string file_name);
     };
