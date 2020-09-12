@@ -15,15 +15,17 @@ namespace TTBParser
         if(entries.size() > 0)
         {
             auto find_srv = entries.find(entry.headcode);
-
-            key += "-";
-            key += ptimeToString(entry.start_time);
+            if(find_srv != entries.end())
+            {
+                key += "-";
+                key += ptimeToString(entry.start_time);
+            }
         }
         
         Entry _entry_insert(entry);
         if(pos_index == -1)
         {
-            _entry_insert.index = _timetable->entries.size()-1;
+            _entry_insert.index = _timetable->entries.size();
             _timetable->entries[key] = _entry_insert;
         }
         else
