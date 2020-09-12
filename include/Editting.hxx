@@ -2,6 +2,8 @@
 #define __EDITTING_HXX__
 
 #include "Structure.hxx"
+#include "Utilities.hxx"
+#include "Timetable.hxx"
 
 namespace TTBParser
 {

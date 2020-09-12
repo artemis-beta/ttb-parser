@@ -35,6 +35,7 @@
 #include "Structure.hxx"
 #include "Types.hxx"
 #include "Utilities.hxx"
+#include "Timetable.hxx"
 
 namespace TTBParser
 {
