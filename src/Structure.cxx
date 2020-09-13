@@ -149,4 +149,46 @@ namespace TTBParser
         }
     }
 
+    void Entry::_add_duration_event(boost::posix_time::ptime start, boost::posix_time::ptime end, std::string label, int index)
+    {
+        index = _shimmy_events(index);
+        duration_events[index] = {start, end, label};
+        size += 1;
+    }
+
+    void Entry::_add_single_event(boost::posix_time::ptime time, std::string label, int index)
+    {
+        index = _shimmy_events(index);
+        single_events[index] = {time, label};
+        size += 1;
+    }
+
+    int Entry::_shimmy_events(int index)
+    {
+        if(index == -1)
+        {
+            return size;
+        }
+        else
+        {
+            if(duration_events.find(index) == duration_events.end() && single_events.find(index) == single_events.end())
+            {
+                throw std::invalid_argument("Index '"+std::to_string(index)+"' is outside scope of event lists");
+            }
+            for(int i{0}; i < index; ++i)
+            {
+                if(duration_events.find(size-i) != duration_events.end())
+                {
+                    duration_events[size-i+1] = duration_events[size-i];
+                }
+                else if(single_events.find(size-i) != single_events.end())
+                {
+                    single_events[size-i+1] = single_events[size-i];
+                }
+            }
+        }
+
+        return index;
+    }
+
 };

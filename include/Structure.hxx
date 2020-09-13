@@ -249,32 +249,13 @@ namespace TTBParser
 
         std::string toString();
 
-        void addDurationEvent(boost::posix_time::ptime start, boost::posix_time::ptime end, std::string label, int index=-1)
-        {
-            if(duration_events.find(index) != duration_events.end() || single_events.find(index) != single_events.end())
-            {
-                throw std::invalid_argument("Index already exists!");
-            }
-            if(index == -1) index = (duration_events.size() > single_events.size()) ? duration_events.size() : single_events.size();
-            duration_events[index] = {start, end, label};
-            size += 1;
-        }
+        int _shimmy_events(int index);
 
-        void addSingleEvent(boost::posix_time::ptime time, std::string label, int index=-1)
-        {
-            if(duration_events.find(index) != duration_events.end() || single_events.find(index) != single_events.end())
-            {
-                throw std::invalid_argument("Index already exists!");
-            }
-            if(index == -1) index = (duration_events.size() > single_events.size()) ? duration_events.size() : single_events.size();
-            single_events[index] = {time, label};
-            size += 1;
-        }
+        void _add_duration_event(boost::posix_time::ptime start, boost::posix_time::ptime end, std::string label, int index);
 
-        std::string toString() const
-        {
-            return toString();
-        }
+        void _add_single_event(boost::posix_time::ptime time, std::string label, int index);
+
+        std::string toString() const {return toString();}
 
         std::vector<std::string> asVector();
         void TemperalOffset(int nmins);

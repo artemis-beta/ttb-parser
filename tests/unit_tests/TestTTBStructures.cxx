@@ -2,15 +2,21 @@
 #include "Structure.hxx"
 #include "Utilities.hxx"
 
-TEST(TestTTBStructures, TestPrintEntry)
+
+TEST(TestTTBStructures, TestEntryShimmy)
 {
     TTBParser::Entry entry;
     entry.headcode = "1V01";
     entry.description = "London Waterloo to Wimbledon";
-    entry.addSingleEvent(TTBParser::getTimeFromString("11:49"), "Waterloo");
-    entry.addDurationEvent(TTBParser::getTimeFromString("11:53"),
+    entry._add_single_event(TTBParser::getTimeFromString("11:49"), "Waterloo", -1);
+    entry._add_duration_event(TTBParser::getTimeFromString("11:53"),
                            TTBParser::getTimeFromString("11:54"),
-                           "Vauxhall");
+                           "Vauxhall", -1);
+    entry._add_duration_event(TTBParser::getTimeFromString("11:57"), TTBParser::getTimeFromString("11:57"), "Earlsfield", -1);
+    entry._add_duration_event(TTBParser::getTimeFromString("11:55"),
+                           TTBParser::getTimeFromString("11:55"),
+                           "Clapham Junction", 1);
+    entry._add_single_event(TTBParser::getTimeFromString("12:03"), "Wimbledon", -1);
     entry.start_time = TTBParser::getTimeFromString("11:48");
     entry.finish_time = TTBParser::getTimeFromString("12:04");
 
