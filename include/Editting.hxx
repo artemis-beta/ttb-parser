@@ -11,16 +11,24 @@ namespace TTBParser
     {
 	private:
 		Timetable* _timetable = nullptr;
+		void null_guard()
+		{
+			if(_timetable == nullptr)
+			{
+				throw std::runtime_error("TTBBuilder instance does not point to any Timetable object for editting.");
+			}
+		}
 	public:
+		TTBBuilder() {}
 		TTBBuilder(Timetable* timetable) : _timetable(timetable) {}
 		void setStartTime(std::string time);
-		void insertEntry(const Entry entry, const int pos_index=-1);
+		Entry& insertEntry(const Entry entry, const int pos_index=-1);
 		Timetable* getTimetable() const {return _timetable;}
-		void insertEvent(Entry& entry, std::string start_time, std::string end_time, std::string label, int index=-1);
-		void insertEvent(Entry& entry, std::string time, std::string label, int index=-1);
-    };
-
-    Entry Clone(const Entry entry, const std::string headcode, const int n_mins_offset);
+		void insertEvent(std::string entry_label, std::string start_time, std::string end_time, std::string label, int index=-1);
+		void insertEvent(std::string entry_label, std::string time, std::string label, int index=-1);
+		void DeleteEntry(std::string label, int instance_num=-1);
+		Entry& CloneEntry(std::string entry_label, const std::string new_headcode, const int n_mins_offset);
+    };	
 };
 
 #endif

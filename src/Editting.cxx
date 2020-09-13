@@ -4,20 +4,50 @@ namespace TTBParser
 {
     void TTBBuilder::setStartTime(std::string time)
     {
+        null_guard();
        _timetable->start = getTimeFromString(time);
     }
 
-    void TTBBuilder::insertEvent(Entry& entry, std::string start_time, std::string end_time, std::string label, int index)
+    void TTBBuilder::insertEvent(std::string entry_label, std::string start_time, std::string end_time, std::string label, int index)
     {
-        entry._add_duration_event(getTimeFromString(start_time), getTimeFromString(end_time), label, index);
+        null_guard();
+        _timetable->getEntry(entry_label)._add_duration_event(getTimeFromString(start_time), getTimeFromString(end_time), label, index);
     }
 
-    void TTBBuilder::insertEvent(Entry& entry, std::string time, std::string label, int index)
+    void TTBBuilder::insertEvent(std::string entry_label, std::string time, std::string label, int index)
     {
-        entry._add_single_event(getTimeFromString(time), label, index);
+        null_guard();
+        _timetable->getEntry(entry_label)._add_single_event(getTimeFromString(time), label, index);
     }
 
-    void TTBBuilder::insertEntry(const Entry entry, const int pos_index)
+    void TTBBuilder::DeleteEntry(std::string label, int instance_num)
+    {
+        null_guard();
+        auto loc = _timetable->getEntries().find(label);
+        int counter = 0;
+        if(loc == _timetable->getEntries().end())
+        {
+            for(auto& entry : _timetable->getEntries())
+            {
+                if(label+ptimeToString(entry.second.start_time) == entry.first)
+                {
+                    if(counter != instance_num) ++counter; continue;
+                    loc = _timetable->getEntries().find(entry.first);
+                }
+            }
+        }
+        
+        const int index = loc->second.index;
+
+        for(int i{index+1}; i < _timetable->getEntries().size(); ++i)
+        {
+            _timetable->getEntry(i).second.index = i-1;
+        }
+
+        _timetable->getEntries().erase(loc);
+    }
+
+    Entry& TTBBuilder::insertEntry(const Entry entry, const int pos_index)
     {
         const std::map<std::string, Entry> entries(_timetable->entries);
         std::string key = entry.headcode;
@@ -47,13 +77,15 @@ namespace TTBParser
             }
             _timetable->entries[key] = _entry_insert;
         }
+        return _timetable->entries[key];
     }
 
-    Entry Clone(const Entry entry, const std::string headcode, const int n_mins_offset)
+    Entry& TTBBuilder::CloneEntry(std::string entry_label, const std::string new_headcode, const int n_mins_offset)
     {
-      Entry _new = Entry(entry);
-      _new.headcode = headcode;
+      Entry _new = Entry(_timetable->getEntry(entry_label));
       _new.TemperalOffset(n_mins_offset);
-      return _new;
+      _new.headcode = new_headcode;
+      insertEntry(_new);
+      return _timetable->getEntry(_new.headcode);
     }
 };

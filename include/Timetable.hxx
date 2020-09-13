@@ -19,7 +19,7 @@ namespace TTBParser
         std::string route_name;
         std::string name;
 
-        Entry getEntry(std::string key)
+        Entry& getEntry(std::string key)
         {
             if(entries.find(key) == entries.end())
             {
@@ -29,7 +29,7 @@ namespace TTBParser
             return entries[key];
         }
 
-        std::pair<std::string, Entry> getEntry(const int i) const
+        std::pair<std::string, Entry&> getEntry(const int i)
         {
             for(auto& entry : entries)
             {
@@ -42,7 +42,7 @@ namespace TTBParser
             throw std::invalid_argument("Index '"+std::to_string(i)+"' is not within timetable scope.");
         }
 
-        std::map<std::string, Entry> getEntries() const {return entries;}
+        std::map<std::string, Entry>& getEntries() {return entries;}
 
         std::string _send_to_string();
         bool sendToFile(const std::string file_name);
