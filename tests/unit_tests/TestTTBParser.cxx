@@ -92,14 +92,4 @@ TEST(TestTTBParser, TestOutputEqInput)
     EXPECT_EQ(timetable._send_to_string(), _data_str);
 }
 
-TEST(TestTTBParser, TestTemperalOffset)
-{
-    TTBParser::Parser* parser = new TTBParser::Parser;
-    EXPECT_TRUE(parser->ParseEntries(std::string(ROOT_DIR)+"/tests/RATP_MetroMoFri.ttb"));
-    TTBParser::Timetable _ttb = parser->getTimetableObject("temp");
-    TTBParser::Entry _before = TTBParser::Entry(_ttb.entries["1L01"]);
-    _ttb.entries["1L01"].TemperalOffset(10);
-    TTBParser::Entry _after  = TTBParser::Entry(_ttb.entries["1L01"]);
-    EXPECT_EQ(TTBParser::ptimeToString(_before.start_time), "06:07");
-    EXPECT_EQ(TTBParser::ptimeToString(_after.start_time), "06:17");
-}
+
