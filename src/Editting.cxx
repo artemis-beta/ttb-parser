@@ -88,4 +88,16 @@ namespace TTBParser
       insertEntry(_new);
       return _timetable->getEntry(_new.headcode);
     }
+
+    void TTBBuilder::connectEvents(std::string entry_label_1, std::string entry_label_2)
+    {
+        Entry& first = _timetable->getEntry(entry_label_1);
+        Entry& second = _timetable->getEntry(entry_label_2);
+
+        first.daughter = &second;
+        second.parent = &first;
+
+        first.finish_as = TTBParser::FinishNewService;
+        second.type = TTBParser::ServiceFromService;
+    }
 };

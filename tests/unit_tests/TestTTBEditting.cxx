@@ -75,3 +75,21 @@ TEST(TestTTBEditting, TestDeleteEntry)
 
     EXPECT_EQ(_builder->getTimetable()->getEntry("2V03").index, 2);
 }
+
+TEST(TestTTBEditting, TestConnectEvents)
+{
+    TTBParser::Timetable* ttb = new TTBParser::Timetable;
+    TTBParser::TTBBuilder* _builder = new TTBParser::TTBBuilder(ttb);
+    TTBParser::Entry entry_a, entry_b;
+
+    entry_a.headcode = "2V00";
+    entry_b.headcode = "2V01";
+
+    _builder->insertEntry(entry_a);
+    _builder->insertEntry(entry_b);
+
+    _builder->connectEvents("2V00", "2V01");
+
+    EXPECT_EQ(_builder->getTimetable()->getEntry("2V00").daughter->headcode, "2V01");
+    EXPECT_EQ(_builder->getTimetable()->getEntry("2V01").parent->headcode, "2V00");
+}
